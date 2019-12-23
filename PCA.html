@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="utf-8" />
+      <title>PCA</title>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX","output/HTML-CSS"],
+    extensions: [],
+    TeX: {
+      extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]
+    },
+    showMathMenu: false
+  });
+</script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js">
+</script>
+      <style>.markdown-preview:not([data-use-github-style]) { padding: 2em; font-size: 1.2em; color: rgb(171, 178, 191); background-color: rgb(40, 44, 52); overflow: auto; }
+.markdown-preview:not([data-use-github-style]) > :first-child { margin-top: 0px; }
+.markdown-preview:not([data-use-github-style]) h1, .markdown-preview:not([data-use-github-style]) h2, .markdown-preview:not([data-use-github-style]) h3, .markdown-preview:not([data-use-github-style]) h4, .markdown-preview:not([data-use-github-style]) h5, .markdown-preview:not([data-use-github-style]) h6 { line-height: 1.2; margin-top: 1.5em; margin-bottom: 0.5em; color: rgb(255, 255, 255); }
+.markdown-preview:not([data-use-github-style]) h1 { font-size: 2.4em; font-weight: 300; }
+.markdown-preview:not([data-use-github-style]) h2 { font-size: 1.8em; font-weight: 400; }
+.markdown-preview:not([data-use-github-style]) h3 { font-size: 1.5em; font-weight: 500; }
+.markdown-preview:not([data-use-github-style]) h4 { font-size: 1.2em; font-weight: 600; }
+.markdown-preview:not([data-use-github-style]) h5 { font-size: 1.1em; font-weight: 600; }
+.markdown-preview:not([data-use-github-style]) h6 { font-size: 1em; font-weight: 600; }
+.markdown-preview:not([data-use-github-style]) strong { color: rgb(255, 255, 255); }
+.markdown-preview:not([data-use-github-style]) del { color: rgb(124, 135, 156); }
+.markdown-preview:not([data-use-github-style]) a, .markdown-preview:not([data-use-github-style]) a code { color: rgb(82, 139, 255); }
+.markdown-preview:not([data-use-github-style]) img { max-width: 100%; }
+.markdown-preview:not([data-use-github-style]) > p { margin-top: 0px; margin-bottom: 1.5em; }
+.markdown-preview:not([data-use-github-style]) > ul, .markdown-preview:not([data-use-github-style]) > ol { margin-bottom: 1.5em; }
+.markdown-preview:not([data-use-github-style]) blockquote { margin: 1.5em 0px; font-size: inherit; color: rgb(124, 135, 156); border-color: rgb(75, 83, 98); border-width: 4px; }
+.markdown-preview:not([data-use-github-style]) hr { margin: 3em 0px; border-top: 2px dashed rgb(75, 83, 98); background: none; }
+.markdown-preview:not([data-use-github-style]) table { margin: 1.5em 0px; }
+.markdown-preview:not([data-use-github-style]) th { color: rgb(255, 255, 255); }
+.markdown-preview:not([data-use-github-style]) th, .markdown-preview:not([data-use-github-style]) td { padding: 0.66em 1em; border: 1px solid rgb(75, 83, 98); }
+.markdown-preview:not([data-use-github-style]) code { color: rgb(255, 255, 255); background-color: rgb(58, 63, 75); }
+.markdown-preview:not([data-use-github-style]) pre.editor-colors { margin: 1.5em 0px; padding: 1em; font-size: 0.92em; border-radius: 3px; background-color: rgb(49, 54, 63); }
+.markdown-preview:not([data-use-github-style]) kbd { color: rgb(255, 255, 255); border-width: 1px 1px 2px; border-style: solid; border-color: rgb(75, 83, 98) rgb(75, 83, 98) rgb(62, 68, 81); border-image: initial; background-color: rgb(58, 63, 75); }
+.markdown-preview[data-use-github-style] { font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif; line-height: 1.6; word-wrap: break-word; padding: 30px; font-size: 16px; color: rgb(51, 51, 51); background-color: rgb(255, 255, 255); overflow: scroll; }
+.markdown-preview[data-use-github-style] > :first-child { margin-top: 0px !important; }
+.markdown-preview[data-use-github-style] > :last-child { margin-bottom: 0px !important; }
+.markdown-preview[data-use-github-style] a:not([href]) { color: inherit; text-decoration: none; }
+.markdown-preview[data-use-github-style] .absent { color: rgb(204, 0, 0); }
+.markdown-preview[data-use-github-style] .anchor { position: absolute; top: 0px; left: 0px; display: block; padding-right: 6px; padding-left: 30px; margin-left: -30px; }
+.markdown-preview[data-use-github-style] .anchor:focus { outline: none; }
+.markdown-preview[data-use-github-style] h1, .markdown-preview[data-use-github-style] h2, .markdown-preview[data-use-github-style] h3, .markdown-preview[data-use-github-style] h4, .markdown-preview[data-use-github-style] h5, .markdown-preview[data-use-github-style] h6 { position: relative; margin-top: 1em; margin-bottom: 16px; font-weight: bold; line-height: 1.4; }
+.markdown-preview[data-use-github-style] h1 .octicon-link, .markdown-preview[data-use-github-style] h2 .octicon-link, .markdown-preview[data-use-github-style] h3 .octicon-link, .markdown-preview[data-use-github-style] h4 .octicon-link, .markdown-preview[data-use-github-style] h5 .octicon-link, .markdown-preview[data-use-github-style] h6 .octicon-link { display: none; color: rgb(0, 0, 0); vertical-align: middle; }
+.markdown-preview[data-use-github-style] h1:hover .anchor, .markdown-preview[data-use-github-style] h2:hover .anchor, .markdown-preview[data-use-github-style] h3:hover .anchor, .markdown-preview[data-use-github-style] h4:hover .anchor, .markdown-preview[data-use-github-style] h5:hover .anchor, .markdown-preview[data-use-github-style] h6:hover .anchor { padding-left: 8px; margin-left: -30px; text-decoration: none; }
+.markdown-preview[data-use-github-style] h1:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h2:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h3:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h4:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h5:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h6:hover .anchor .octicon-link { display: inline-block; }
+.markdown-preview[data-use-github-style] h1 tt, .markdown-preview[data-use-github-style] h2 tt, .markdown-preview[data-use-github-style] h3 tt, .markdown-preview[data-use-github-style] h4 tt, .markdown-preview[data-use-github-style] h5 tt, .markdown-preview[data-use-github-style] h6 tt, .markdown-preview[data-use-github-style] h1 code, .markdown-preview[data-use-github-style] h2 code, .markdown-preview[data-use-github-style] h3 code, .markdown-preview[data-use-github-style] h4 code, .markdown-preview[data-use-github-style] h5 code, .markdown-preview[data-use-github-style] h6 code { font-size: inherit; }
+.markdown-preview[data-use-github-style] h1 { padding-bottom: 0.3em; font-size: 2.25em; line-height: 1.2; border-bottom: 1px solid rgb(238, 238, 238); }
+.markdown-preview[data-use-github-style] h1 .anchor { line-height: 1; }
+.markdown-preview[data-use-github-style] h2 { padding-bottom: 0.3em; font-size: 1.75em; line-height: 1.225; border-bottom: 1px solid rgb(238, 238, 238); }
+.markdown-preview[data-use-github-style] h2 .anchor { line-height: 1; }
+.markdown-preview[data-use-github-style] h3 { font-size: 1.5em; line-height: 1.43; }
+.markdown-preview[data-use-github-style] h3 .anchor { line-height: 1.2; }
+.markdown-preview[data-use-github-style] h4 { font-size: 1.25em; }
+.markdown-preview[data-use-github-style] h4 .anchor { line-height: 1.2; }
+.markdown-preview[data-use-github-style] h5 { font-size: 1em; }
+.markdown-preview[data-use-github-style] h5 .anchor { line-height: 1.1; }
+.markdown-preview[data-use-github-style] h6 { font-size: 1em; color: rgb(119, 119, 119); }
+.markdown-preview[data-use-github-style] h6 .anchor { line-height: 1.1; }
+.markdown-preview[data-use-github-style] p, .markdown-preview[data-use-github-style] blockquote, .markdown-preview[data-use-github-style] ul, .markdown-preview[data-use-github-style] ol, .markdown-preview[data-use-github-style] dl, .markdown-preview[data-use-github-style] table, .markdown-preview[data-use-github-style] pre { margin-top: 0px; margin-bottom: 16px; }
+.markdown-preview[data-use-github-style] hr { height: 4px; padding: 0px; margin: 16px 0px; background-color: rgb(231, 231, 231); border: 0px none; }
+.markdown-preview[data-use-github-style] ul, .markdown-preview[data-use-github-style] ol { padding-left: 2em; }
+.markdown-preview[data-use-github-style] ul.no-list, .markdown-preview[data-use-github-style] ol.no-list { padding: 0px; list-style-type: none; }
+.markdown-preview[data-use-github-style] ul ul, .markdown-preview[data-use-github-style] ul ol, .markdown-preview[data-use-github-style] ol ol, .markdown-preview[data-use-github-style] ol ul { margin-top: 0px; margin-bottom: 0px; }
+.markdown-preview[data-use-github-style] li > p { margin-top: 16px; }
+.markdown-preview[data-use-github-style] dl { padding: 0px; }
+.markdown-preview[data-use-github-style] dl dt { padding: 0px; margin-top: 16px; font-size: 1em; font-style: italic; font-weight: bold; }
+.markdown-preview[data-use-github-style] dl dd { padding: 0px 16px; margin-bottom: 16px; }
+.markdown-preview[data-use-github-style] blockquote { padding: 0px 15px; color: rgb(119, 119, 119); border-left: 4px solid rgb(221, 221, 221); }
+.markdown-preview[data-use-github-style] blockquote > :first-child { margin-top: 0px; }
+.markdown-preview[data-use-github-style] blockquote > :last-child { margin-bottom: 0px; }
+.markdown-preview[data-use-github-style] table { display: block; width: 100%; overflow: auto; word-break: keep-all; }
+.markdown-preview[data-use-github-style] table th { font-weight: bold; }
+.markdown-preview[data-use-github-style] table th, .markdown-preview[data-use-github-style] table td { padding: 6px 13px; border: 1px solid rgb(221, 221, 221); }
+.markdown-preview[data-use-github-style] table tr { background-color: rgb(255, 255, 255); border-top: 1px solid rgb(204, 204, 204); }
+.markdown-preview[data-use-github-style] table tr:nth-child(2n) { background-color: rgb(248, 248, 248); }
+.markdown-preview[data-use-github-style] img { max-width: 100%; box-sizing: border-box; }
+.markdown-preview[data-use-github-style] .emoji { max-width: none; }
+.markdown-preview[data-use-github-style] span.frame { display: block; overflow: hidden; }
+.markdown-preview[data-use-github-style] span.frame > span { display: block; float: left; width: auto; padding: 7px; margin: 13px 0px 0px; overflow: hidden; border: 1px solid rgb(221, 221, 221); }
+.markdown-preview[data-use-github-style] span.frame span img { display: block; float: left; }
+.markdown-preview[data-use-github-style] span.frame span span { display: block; padding: 5px 0px 0px; clear: both; color: rgb(51, 51, 51); }
+.markdown-preview[data-use-github-style] span.align-center { display: block; overflow: hidden; clear: both; }
+.markdown-preview[data-use-github-style] span.align-center > span { display: block; margin: 13px auto 0px; overflow: hidden; text-align: center; }
+.markdown-preview[data-use-github-style] span.align-center span img { margin: 0px auto; text-align: center; }
+.markdown-preview[data-use-github-style] span.align-right { display: block; overflow: hidden; clear: both; }
+.markdown-preview[data-use-github-style] span.align-right > span { display: block; margin: 13px 0px 0px; overflow: hidden; text-align: right; }
+.markdown-preview[data-use-github-style] span.align-right span img { margin: 0px; text-align: right; }
+.markdown-preview[data-use-github-style] span.float-left { display: block; float: left; margin-right: 13px; overflow: hidden; }
+.markdown-preview[data-use-github-style] span.float-left span { margin: 13px 0px 0px; }
+.markdown-preview[data-use-github-style] span.float-right { display: block; float: right; margin-left: 13px; overflow: hidden; }
+.markdown-preview[data-use-github-style] span.float-right > span { display: block; margin: 13px auto 0px; overflow: hidden; text-align: right; }
+.markdown-preview[data-use-github-style] code, .markdown-preview[data-use-github-style] tt { padding: 0.2em 0px; margin: 0px; font-size: 85%; background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; }
+.markdown-preview[data-use-github-style] code::before, .markdown-preview[data-use-github-style] tt::before, .markdown-preview[data-use-github-style] code::after, .markdown-preview[data-use-github-style] tt::after { letter-spacing: -0.2em; content: " "; }
+.markdown-preview[data-use-github-style] code br, .markdown-preview[data-use-github-style] tt br { display: none; }
+.markdown-preview[data-use-github-style] del code { text-decoration: inherit; }
+.markdown-preview[data-use-github-style] pre > code { padding: 0px; margin: 0px; font-size: 100%; word-break: normal; white-space: pre; background: transparent; border: 0px; }
+.markdown-preview[data-use-github-style] .highlight { margin-bottom: 16px; }
+.markdown-preview[data-use-github-style] .highlight pre, .markdown-preview[data-use-github-style] pre { padding: 16px; overflow: auto; font-size: 85%; line-height: 1.45; background-color: rgb(247, 247, 247); border-radius: 3px; }
+.markdown-preview[data-use-github-style] .highlight pre { margin-bottom: 0px; word-break: normal; }
+.markdown-preview[data-use-github-style] pre { word-wrap: normal; }
+.markdown-preview[data-use-github-style] pre code, .markdown-preview[data-use-github-style] pre tt { display: inline; max-width: initial; padding: 0px; margin: 0px; overflow: initial; line-height: inherit; word-wrap: normal; background-color: transparent; border: 0px; }
+.markdown-preview[data-use-github-style] pre code::before, .markdown-preview[data-use-github-style] pre tt::before, .markdown-preview[data-use-github-style] pre code::after, .markdown-preview[data-use-github-style] pre tt::after { content: normal; }
+.markdown-preview[data-use-github-style] kbd { display: inline-block; padding: 3px 5px; font-size: 11px; line-height: 10px; color: rgb(85, 85, 85); vertical-align: middle; background-color: rgb(252, 252, 252); border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204) rgb(204, 204, 204) rgb(187, 187, 187); border-image: initial; border-radius: 3px; box-shadow: rgb(187, 187, 187) 0px -1px 0px inset; }
+.markdown-preview[data-use-github-style] a { color: rgb(51, 122, 183); }
+.markdown-preview[data-use-github-style] code { color: inherit; }
+.markdown-preview[data-use-github-style] pre.editor-colors { padding: 0.8em 1em; margin-bottom: 1em; font-size: 0.85em; border-radius: 4px; overflow: auto; }
+.scrollbars-visible-always .markdown-preview pre.editor-colors .vertical-scrollbar, .scrollbars-visible-always .markdown-preview pre.editor-colors .horizontal-scrollbar { visibility: hidden; }
+.scrollbars-visible-always .markdown-preview pre.editor-colors:hover .vertical-scrollbar, .scrollbars-visible-always .markdown-preview pre.editor-colors:hover .horizontal-scrollbar { visibility: visible; }
+.markdown-preview .task-list-item-checkbox { position: absolute; margin: 0.25em 0px 0px -1.4em; }
+.markdown-preview:not([data-use-github-style]) { padding: 2em; font-size: 1.2em; color: rgb(171, 178, 191); background-color: rgb(40, 44, 52); overflow: auto; }
+.markdown-preview:not([data-use-github-style]) > :first-child { margin-top: 0px; }
+.markdown-preview:not([data-use-github-style]) h1, .markdown-preview:not([data-use-github-style]) h2, .markdown-preview:not([data-use-github-style]) h3, .markdown-preview:not([data-use-github-style]) h4, .markdown-preview:not([data-use-github-style]) h5, .markdown-preview:not([data-use-github-style]) h6 { line-height: 1.2; margin-top: 1.5em; margin-bottom: 0.5em; color: rgb(255, 255, 255); }
+.markdown-preview:not([data-use-github-style]) h1 { font-size: 2.4em; font-weight: 300; }
+.markdown-preview:not([data-use-github-style]) h2 { font-size: 1.8em; font-weight: 400; }
+.markdown-preview:not([data-use-github-style]) h3 { font-size: 1.5em; font-weight: 500; }
+.markdown-preview:not([data-use-github-style]) h4 { font-size: 1.2em; font-weight: 600; }
+.markdown-preview:not([data-use-github-style]) h5 { font-size: 1.1em; font-weight: 600; }
+.markdown-preview:not([data-use-github-style]) h6 { font-size: 1em; font-weight: 600; }
+.markdown-preview:not([data-use-github-style]) strong { color: rgb(255, 255, 255); }
+.markdown-preview:not([data-use-github-style]) del { color: rgb(124, 135, 156); }
+.markdown-preview:not([data-use-github-style]) a, .markdown-preview:not([data-use-github-style]) a code { color: rgb(82, 139, 255); }
+.markdown-preview:not([data-use-github-style]) img { max-width: 100%; }
+.markdown-preview:not([data-use-github-style]) > p { margin-top: 0px; margin-bottom: 1.5em; }
+.markdown-preview:not([data-use-github-style]) > ul, .markdown-preview:not([data-use-github-style]) > ol { margin-bottom: 1.5em; }
+.markdown-preview:not([data-use-github-style]) blockquote { margin: 1.5em 0px; font-size: inherit; color: rgb(124, 135, 156); border-color: rgb(75, 83, 98); border-width: 4px; }
+.markdown-preview:not([data-use-github-style]) hr { margin: 3em 0px; border-top: 2px dashed rgb(75, 83, 98); background: none; }
+.markdown-preview:not([data-use-github-style]) table { margin: 1.5em 0px; }
+.markdown-preview:not([data-use-github-style]) th { color: rgb(255, 255, 255); }
+.markdown-preview:not([data-use-github-style]) th, .markdown-preview:not([data-use-github-style]) td { padding: 0.66em 1em; border: 1px solid rgb(75, 83, 98); }
+.markdown-preview:not([data-use-github-style]) pre, .markdown-preview:not([data-use-github-style]) code { color: rgb(255, 255, 255); background-color: rgb(58, 63, 75); }
+.markdown-preview:not([data-use-github-style]) pre, .markdown-preview:not([data-use-github-style]) pre.editor-colors { margin: 1.5em 0px; padding: 1em; font-size: 0.92em; border-radius: 3px; background-color: rgb(49, 54, 63); }
+.markdown-preview:not([data-use-github-style]) kbd { color: rgb(255, 255, 255); border-width: 1px 1px 2px; border-style: solid; border-color: rgb(75, 83, 98) rgb(75, 83, 98) rgb(62, 68, 81); border-image: initial; background-color: rgb(58, 63, 75); }
+.markdown-preview[data-use-github-style] { font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif; line-height: 1.6; word-wrap: break-word; padding: 30px; font-size: 16px; color: rgb(51, 51, 51); background-color: rgb(255, 255, 255); overflow: scroll; }
+.markdown-preview[data-use-github-style] > :first-child { margin-top: 0px !important; }
+.markdown-preview[data-use-github-style] > :last-child { margin-bottom: 0px !important; }
+.markdown-preview[data-use-github-style] a:not([href]) { color: inherit; text-decoration: none; }
+.markdown-preview[data-use-github-style] .absent { color: rgb(204, 0, 0); }
+.markdown-preview[data-use-github-style] .anchor { position: absolute; top: 0px; left: 0px; display: block; padding-right: 6px; padding-left: 30px; margin-left: -30px; }
+.markdown-preview[data-use-github-style] .anchor:focus { outline: none; }
+.markdown-preview[data-use-github-style] h1, .markdown-preview[data-use-github-style] h2, .markdown-preview[data-use-github-style] h3, .markdown-preview[data-use-github-style] h4, .markdown-preview[data-use-github-style] h5, .markdown-preview[data-use-github-style] h6 { position: relative; margin-top: 1em; margin-bottom: 16px; font-weight: bold; line-height: 1.4; }
+.markdown-preview[data-use-github-style] h1 .octicon-link, .markdown-preview[data-use-github-style] h2 .octicon-link, .markdown-preview[data-use-github-style] h3 .octicon-link, .markdown-preview[data-use-github-style] h4 .octicon-link, .markdown-preview[data-use-github-style] h5 .octicon-link, .markdown-preview[data-use-github-style] h6 .octicon-link { display: none; color: rgb(0, 0, 0); vertical-align: middle; }
+.markdown-preview[data-use-github-style] h1:hover .anchor, .markdown-preview[data-use-github-style] h2:hover .anchor, .markdown-preview[data-use-github-style] h3:hover .anchor, .markdown-preview[data-use-github-style] h4:hover .anchor, .markdown-preview[data-use-github-style] h5:hover .anchor, .markdown-preview[data-use-github-style] h6:hover .anchor { padding-left: 8px; margin-left: -30px; text-decoration: none; }
+.markdown-preview[data-use-github-style] h1:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h2:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h3:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h4:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h5:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h6:hover .anchor .octicon-link { display: inline-block; }
+.markdown-preview[data-use-github-style] h1 tt, .markdown-preview[data-use-github-style] h2 tt, .markdown-preview[data-use-github-style] h3 tt, .markdown-preview[data-use-github-style] h4 tt, .markdown-preview[data-use-github-style] h5 tt, .markdown-preview[data-use-github-style] h6 tt, .markdown-preview[data-use-github-style] h1 code, .markdown-preview[data-use-github-style] h2 code, .markdown-preview[data-use-github-style] h3 code, .markdown-preview[data-use-github-style] h4 code, .markdown-preview[data-use-github-style] h5 code, .markdown-preview[data-use-github-style] h6 code { font-size: inherit; }
+.markdown-preview[data-use-github-style] h1 { padding-bottom: 0.3em; font-size: 2.25em; line-height: 1.2; border-bottom: 1px solid rgb(238, 238, 238); }
+.markdown-preview[data-use-github-style] h1 .anchor { line-height: 1; }
+.markdown-preview[data-use-github-style] h2 { padding-bottom: 0.3em; font-size: 1.75em; line-height: 1.225; border-bottom: 1px solid rgb(238, 238, 238); }
+.markdown-preview[data-use-github-style] h2 .anchor { line-height: 1; }
+.markdown-preview[data-use-github-style] h3 { font-size: 1.5em; line-height: 1.43; }
+.markdown-preview[data-use-github-style] h3 .anchor { line-height: 1.2; }
+.markdown-preview[data-use-github-style] h4 { font-size: 1.25em; }
+.markdown-preview[data-use-github-style] h4 .anchor { line-height: 1.2; }
+.markdown-preview[data-use-github-style] h5 { font-size: 1em; }
+.markdown-preview[data-use-github-style] h5 .anchor { line-height: 1.1; }
+.markdown-preview[data-use-github-style] h6 { font-size: 1em; color: rgb(119, 119, 119); }
+.markdown-preview[data-use-github-style] h6 .anchor { line-height: 1.1; }
+.markdown-preview[data-use-github-style] p, .markdown-preview[data-use-github-style] blockquote, .markdown-preview[data-use-github-style] ul, .markdown-preview[data-use-github-style] ol, .markdown-preview[data-use-github-style] dl, .markdown-preview[data-use-github-style] table, .markdown-preview[data-use-github-style] pre { margin-top: 0px; margin-bottom: 16px; }
+.markdown-preview[data-use-github-style] hr { height: 4px; padding: 0px; margin: 16px 0px; background-color: rgb(231, 231, 231); border: 0px none; }
+.markdown-preview[data-use-github-style] ul, .markdown-preview[data-use-github-style] ol { padding-left: 2em; }
+.markdown-preview[data-use-github-style] ul.no-list, .markdown-preview[data-use-github-style] ol.no-list { padding: 0px; list-style-type: none; }
+.markdown-preview[data-use-github-style] ul ul, .markdown-preview[data-use-github-style] ul ol, .markdown-preview[data-use-github-style] ol ol, .markdown-preview[data-use-github-style] ol ul { margin-top: 0px; margin-bottom: 0px; }
+.markdown-preview[data-use-github-style] li > p { margin-top: 16px; }
+.markdown-preview[data-use-github-style] dl { padding: 0px; }
+.markdown-preview[data-use-github-style] dl dt { padding: 0px; margin-top: 16px; font-size: 1em; font-style: italic; font-weight: bold; }
+.markdown-preview[data-use-github-style] dl dd { padding: 0px 16px; margin-bottom: 16px; }
+.markdown-preview[data-use-github-style] blockquote { padding: 0px 15px; color: rgb(119, 119, 119); border-left: 4px solid rgb(221, 221, 221); }
+.markdown-preview[data-use-github-style] blockquote > :first-child { margin-top: 0px; }
+.markdown-preview[data-use-github-style] blockquote > :last-child { margin-bottom: 0px; }
+.markdown-preview[data-use-github-style] table { display: block; width: 100%; overflow: auto; word-break: keep-all; }
+.markdown-preview[data-use-github-style] table th { font-weight: bold; }
+.markdown-preview[data-use-github-style] table th, .markdown-preview[data-use-github-style] table td { padding: 6px 13px; border: 1px solid rgb(221, 221, 221); }
+.markdown-preview[data-use-github-style] table tr { background-color: rgb(255, 255, 255); border-top: 1px solid rgb(204, 204, 204); }
+.markdown-preview[data-use-github-style] table tr:nth-child(2n) { background-color: rgb(248, 248, 248); }
+.markdown-preview[data-use-github-style] img { max-width: 100%; box-sizing: border-box; }
+.markdown-preview[data-use-github-style] .emoji { max-width: none; }
+.markdown-preview[data-use-github-style] span.frame { display: block; overflow: hidden; }
+.markdown-preview[data-use-github-style] span.frame > span { display: block; float: left; width: auto; padding: 7px; margin: 13px 0px 0px; overflow: hidden; border: 1px solid rgb(221, 221, 221); }
+.markdown-preview[data-use-github-style] span.frame span img { display: block; float: left; }
+.markdown-preview[data-use-github-style] span.frame span span { display: block; padding: 5px 0px 0px; clear: both; color: rgb(51, 51, 51); }
+.markdown-preview[data-use-github-style] span.align-center { display: block; overflow: hidden; clear: both; }
+.markdown-preview[data-use-github-style] span.align-center > span { display: block; margin: 13px auto 0px; overflow: hidden; text-align: center; }
+.markdown-preview[data-use-github-style] span.align-center span img { margin: 0px auto; text-align: center; }
+.markdown-preview[data-use-github-style] span.align-right { display: block; overflow: hidden; clear: both; }
+.markdown-preview[data-use-github-style] span.align-right > span { display: block; margin: 13px 0px 0px; overflow: hidden; text-align: right; }
+.markdown-preview[data-use-github-style] span.align-right span img { margin: 0px; text-align: right; }
+.markdown-preview[data-use-github-style] span.float-left { display: block; float: left; margin-right: 13px; overflow: hidden; }
+.markdown-preview[data-use-github-style] span.float-left span { margin: 13px 0px 0px; }
+.markdown-preview[data-use-github-style] span.float-right { display: block; float: right; margin-left: 13px; overflow: hidden; }
+.markdown-preview[data-use-github-style] span.float-right > span { display: block; margin: 13px auto 0px; overflow: hidden; text-align: right; }
+.markdown-preview[data-use-github-style] code, .markdown-preview[data-use-github-style] tt { padding: 0.2em 0px; margin: 0px; font-size: 85%; background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; }
+.markdown-preview[data-use-github-style] code::before, .markdown-preview[data-use-github-style] tt::before, .markdown-preview[data-use-github-style] code::after, .markdown-preview[data-use-github-style] tt::after { letter-spacing: -0.2em; content: " "; }
+.markdown-preview[data-use-github-style] code br, .markdown-preview[data-use-github-style] tt br { display: none; }
+.markdown-preview[data-use-github-style] del code { text-decoration: inherit; }
+.markdown-preview[data-use-github-style] pre > code { padding: 0px; margin: 0px; font-size: 100%; word-break: normal; white-space: pre; background: transparent; border: 0px; }
+.markdown-preview[data-use-github-style] .highlight { margin-bottom: 16px; }
+.markdown-preview[data-use-github-style] .highlight pre, .markdown-preview[data-use-github-style] pre { padding: 16px; overflow: auto; font-size: 85%; line-height: 1.45; background-color: rgb(247, 247, 247); border-radius: 3px; }
+.markdown-preview[data-use-github-style] .highlight pre { margin-bottom: 0px; word-break: normal; }
+.markdown-preview[data-use-github-style] pre { word-wrap: normal; }
+.markdown-preview[data-use-github-style] pre code, .markdown-preview[data-use-github-style] pre tt { display: inline; max-width: initial; padding: 0px; margin: 0px; overflow: initial; line-height: inherit; word-wrap: normal; background-color: transparent; border: 0px; }
+.markdown-preview[data-use-github-style] pre code::before, .markdown-preview[data-use-github-style] pre tt::before, .markdown-preview[data-use-github-style] pre code::after, .markdown-preview[data-use-github-style] pre tt::after { content: normal; }
+.markdown-preview[data-use-github-style] kbd { display: inline-block; padding: 3px 5px; font-size: 11px; line-height: 10px; color: rgb(85, 85, 85); vertical-align: middle; background-color: rgb(252, 252, 252); border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204) rgb(204, 204, 204) rgb(187, 187, 187); border-image: initial; border-radius: 3px; box-shadow: rgb(187, 187, 187) 0px -1px 0px inset; }
+.markdown-preview[data-use-github-style] a { color: rgb(51, 122, 183); }
+.markdown-preview[data-use-github-style] pre, .markdown-preview[data-use-github-style] code { color: inherit; }
+.markdown-preview[data-use-github-style] pre, .markdown-preview[data-use-github-style] pre.editor-colors { padding: 0.8em 1em; margin-bottom: 1em; font-size: 0.85em; border-radius: 4px; overflow: auto; }
+.scrollbars-visible-always .markdown-preview pre.editor-colors .vertical-scrollbar, .scrollbars-visible-always .markdown-preview pre.editor-colors .horizontal-scrollbar { visibility: hidden; }
+.scrollbars-visible-always .markdown-preview pre.editor-colors:hover .vertical-scrollbar, .scrollbars-visible-always .markdown-preview pre.editor-colors:hover .horizontal-scrollbar { visibility: visible; }
+.markdown-preview del { text-decoration: none; position: relative; }
+.markdown-preview del::after { border-bottom: 1px solid black; content: ""; left: 0px; position: absolute; right: 0px; top: 50%; }
+.markdown-preview .flash { animation: flash 1s ease-out 1; outline: rgba(255, 0, 0, 0) solid 1px; }
+.markdown-preview .flash:not(li) { display: block; }
+.bracket-matcher .region {
+  border-bottom: 1px dotted lime;
+  position: absolute;
+}
+
+.spell-check-misspelling .region {
+  border-bottom: 2px dotted rgba(255, 51, 51, 0.75);
+}
+.spell-check-corrections {
+  width: 25em !important;
+}
+
+pre.editor-colors {
+  background-color: #282c34;
+  color: #abb2bf;
+}
+pre.editor-colors .line.cursor-line {
+  background-color: rgba(153, 187, 255, 0.04);
+}
+pre.editor-colors .invisible {
+  color: #abb2bf;
+}
+pre.editor-colors .cursor {
+  border-left: 2px solid #528bff;
+}
+pre.editor-colors .selection .region {
+  background-color: #3e4451;
+}
+pre.editor-colors .bracket-matcher .region {
+  border-bottom: 1px solid #528bff;
+  box-sizing: border-box;
+}
+pre.editor-colors .invisible-character {
+  color: rgba(171, 178, 191, 0.15);
+}
+pre.editor-colors .indent-guide {
+  color: rgba(171, 178, 191, 0.15);
+}
+pre.editor-colors .wrap-guide {
+  background-color: rgba(171, 178, 191, 0.15);
+}
+pre.editor-colors .find-result .region.region.region,
+pre.editor-colors .current-result .region.region.region {
+  border-radius: 2px;
+  background-color: rgba(82, 139, 255, 0.24);
+  transition: border-color 0.4s;
+}
+pre.editor-colors .find-result .region.region.region {
+  border: 2px solid transparent;
+}
+pre.editor-colors .current-result .region.region.region {
+  border: 2px solid #528bff;
+  transition-duration: .1s;
+}
+pre.editor-colors .gutter .line-number {
+  color: #636d83;
+  -webkit-font-smoothing: antialiased;
+}
+pre.editor-colors .gutter .line-number.cursor-line {
+  color: #abb2bf;
+  background-color: #2c313a;
+}
+pre.editor-colors .gutter .line-number.cursor-line-no-selection {
+  background-color: transparent;
+}
+pre.editor-colors .gutter .line-number .icon-right {
+  color: #abb2bf;
+}
+pre.editor-colors .gutter:not(.git-diff-icon) .line-number.git-line-removed.git-line-removed::before {
+  bottom: -3px;
+}
+pre.editor-colors .gutter:not(.git-diff-icon) .line-number.git-line-removed::after {
+  content: "";
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  width: 25px;
+  border-bottom: 1px dotted rgba(224, 82, 82, 0.5);
+  pointer-events: none;
+}
+pre.editor-colors .gutter .line-number.folded,
+pre.editor-colors .gutter .line-number:after,
+pre.editor-colors .fold-marker:after {
+  color: #abb2bf;
+}
+.syntax--comment {
+  color: #5c6370;
+  font-style: italic;
+}
+.syntax--comment .syntax--markup.syntax--link {
+  color: #5c6370;
+}
+.syntax--entity.syntax--name.syntax--type {
+  color: #e5c07b;
+}
+.syntax--entity.syntax--other.syntax--inherited-class {
+  color: #98c379;
+}
+.syntax--keyword {
+  color: #c678dd;
+}
+.syntax--keyword.syntax--control {
+  color: #c678dd;
+}
+.syntax--keyword.syntax--operator {
+  color: #abb2bf;
+}
+.syntax--keyword.syntax--other.syntax--special-method {
+  color: #61afef;
+}
+.syntax--keyword.syntax--other.syntax--unit {
+  color: #d19a66;
+}
+.syntax--storage {
+  color: #c678dd;
+}
+.syntax--storage.syntax--type.syntax--annotation,
+.syntax--storage.syntax--type.syntax--primitive {
+  color: #c678dd;
+}
+.syntax--storage.syntax--modifier.syntax--package,
+.syntax--storage.syntax--modifier.syntax--import {
+  color: #abb2bf;
+}
+.syntax--constant {
+  color: #d19a66;
+}
+.syntax--constant.syntax--variable {
+  color: #d19a66;
+}
+.syntax--constant.syntax--character.syntax--escape {
+  color: #56b6c2;
+}
+.syntax--constant.syntax--numeric {
+  color: #d19a66;
+}
+.syntax--constant.syntax--other.syntax--color {
+  color: #56b6c2;
+}
+.syntax--constant.syntax--other.syntax--symbol {
+  color: #56b6c2;
+}
+.syntax--variable {
+  color: #e06c75;
+}
+.syntax--variable.syntax--interpolation {
+  color: #be5046;
+}
+.syntax--variable.syntax--parameter {
+  color: #abb2bf;
+}
+.syntax--string {
+  color: #98c379;
+}
+.syntax--string.syntax--regexp {
+  color: #56b6c2;
+}
+.syntax--string.syntax--regexp .syntax--source.syntax--ruby.syntax--embedded {
+  color: #e5c07b;
+}
+.syntax--string.syntax--other.syntax--link {
+  color: #e06c75;
+}
+.syntax--punctuation.syntax--definition.syntax--comment {
+  color: #5c6370;
+}
+.syntax--punctuation.syntax--definition.syntax--method-parameters,
+.syntax--punctuation.syntax--definition.syntax--function-parameters,
+.syntax--punctuation.syntax--definition.syntax--parameters,
+.syntax--punctuation.syntax--definition.syntax--separator,
+.syntax--punctuation.syntax--definition.syntax--seperator,
+.syntax--punctuation.syntax--definition.syntax--array {
+  color: #abb2bf;
+}
+.syntax--punctuation.syntax--definition.syntax--heading,
+.syntax--punctuation.syntax--definition.syntax--identity {
+  color: #61afef;
+}
+.syntax--punctuation.syntax--definition.syntax--bold {
+  color: #e5c07b;
+  font-weight: bold;
+}
+.syntax--punctuation.syntax--definition.syntax--italic {
+  color: #c678dd;
+  font-style: italic;
+}
+.syntax--punctuation.syntax--section.syntax--embedded {
+  color: #be5046;
+}
+.syntax--punctuation.syntax--section.syntax--method,
+.syntax--punctuation.syntax--section.syntax--class,
+.syntax--punctuation.syntax--section.syntax--inner-class {
+  color: #abb2bf;
+}
+.syntax--support.syntax--class {
+  color: #e5c07b;
+}
+.syntax--support.syntax--type {
+  color: #56b6c2;
+}
+.syntax--support.syntax--function {
+  color: #56b6c2;
+}
+.syntax--support.syntax--function.syntax--any-method {
+  color: #61afef;
+}
+.syntax--entity.syntax--name.syntax--function {
+  color: #61afef;
+}
+.syntax--entity.syntax--name.syntax--class,
+.syntax--entity.syntax--name.syntax--type.syntax--class {
+  color: #e5c07b;
+}
+.syntax--entity.syntax--name.syntax--section {
+  color: #61afef;
+}
+.syntax--entity.syntax--name.syntax--tag {
+  color: #e06c75;
+}
+.syntax--entity.syntax--other.syntax--attribute-name {
+  color: #d19a66;
+}
+.syntax--entity.syntax--other.syntax--attribute-name.syntax--id {
+  color: #61afef;
+}
+.syntax--meta.syntax--class {
+  color: #e5c07b;
+}
+.syntax--meta.syntax--class.syntax--body {
+  color: #abb2bf;
+}
+.syntax--meta.syntax--method-call,
+.syntax--meta.syntax--method {
+  color: #abb2bf;
+}
+.syntax--meta.syntax--definition.syntax--variable {
+  color: #e06c75;
+}
+.syntax--meta.syntax--link {
+  color: #d19a66;
+}
+.syntax--meta.syntax--require {
+  color: #61afef;
+}
+.syntax--meta.syntax--selector {
+  color: #c678dd;
+}
+.syntax--meta.syntax--separator {
+  background-color: #373b41;
+  color: #abb2bf;
+}
+.syntax--meta.syntax--tag {
+  color: #abb2bf;
+}
+.syntax--underline {
+  text-decoration: underline;
+}
+.syntax--none {
+  color: #abb2bf;
+}
+.syntax--invalid.syntax--deprecated {
+  color: #523d14 !important;
+  background-color: #e0c285 !important;
+}
+.syntax--invalid.syntax--illegal {
+  color: white !important;
+  background-color: #e05252 !important;
+}
+.syntax--markup.syntax--bold {
+  color: #d19a66;
+  font-weight: bold;
+}
+.syntax--markup.syntax--changed {
+  color: #c678dd;
+}
+.syntax--markup.syntax--deleted {
+  color: #e06c75;
+}
+.syntax--markup.syntax--italic {
+  color: #c678dd;
+  font-style: italic;
+}
+.syntax--markup.syntax--heading {
+  color: #e06c75;
+}
+.syntax--markup.syntax--heading .syntax--punctuation.syntax--definition.syntax--heading {
+  color: #61afef;
+}
+.syntax--markup.syntax--link {
+  color: #56b6c2;
+}
+.syntax--markup.syntax--inserted {
+  color: #98c379;
+}
+.syntax--markup.syntax--quote {
+  color: #d19a66;
+}
+.syntax--markup.syntax--raw {
+  color: #98c379;
+}
+.syntax--source.syntax--c .syntax--keyword.syntax--operator {
+  color: #c678dd;
+}
+.syntax--source.syntax--cpp .syntax--keyword.syntax--operator {
+  color: #c678dd;
+}
+.syntax--source.syntax--cs .syntax--keyword.syntax--operator {
+  color: #c678dd;
+}
+.syntax--source.syntax--css .syntax--property-name,
+.syntax--source.syntax--css .syntax--property-value {
+  color: #828997;
+}
+.syntax--source.syntax--css .syntax--property-name.syntax--support,
+.syntax--source.syntax--css .syntax--property-value.syntax--support {
+  color: #abb2bf;
+}
+.syntax--source.syntax--gfm .syntax--markup {
+  -webkit-font-smoothing: auto;
+}
+.syntax--source.syntax--gfm .syntax--link .syntax--entity {
+  color: #61afef;
+}
+.syntax--source.syntax--go .syntax--storage.syntax--type.syntax--string {
+  color: #c678dd;
+}
+.syntax--source.syntax--ini .syntax--keyword.syntax--other.syntax--definition.syntax--ini {
+  color: #e06c75;
+}
+.syntax--source.syntax--java .syntax--storage.syntax--modifier.syntax--import {
+  color: #e5c07b;
+}
+.syntax--source.syntax--java .syntax--storage.syntax--type {
+  color: #e5c07b;
+}
+.syntax--source.syntax--java .syntax--keyword.syntax--operator.syntax--instanceof {
+  color: #c678dd;
+}
+.syntax--source.syntax--java-properties .syntax--meta.syntax--key-pair {
+  color: #e06c75;
+}
+.syntax--source.syntax--java-properties .syntax--meta.syntax--key-pair > .syntax--punctuation {
+  color: #abb2bf;
+}
+.syntax--source.syntax--js .syntax--keyword.syntax--operator {
+  color: #56b6c2;
+}
+.syntax--source.syntax--js .syntax--keyword.syntax--operator.syntax--delete,
+.syntax--source.syntax--js .syntax--keyword.syntax--operator.syntax--in,
+.syntax--source.syntax--js .syntax--keyword.syntax--operator.syntax--of,
+.syntax--source.syntax--js .syntax--keyword.syntax--operator.syntax--instanceof,
+.syntax--source.syntax--js .syntax--keyword.syntax--operator.syntax--new,
+.syntax--source.syntax--js .syntax--keyword.syntax--operator.syntax--typeof,
+.syntax--source.syntax--js .syntax--keyword.syntax--operator.syntax--void {
+  color: #c678dd;
+}
+.syntax--source.syntax--json .syntax--meta.syntax--structure.syntax--dictionary.syntax--json > .syntax--string.syntax--quoted.syntax--json {
+  color: #e06c75;
+}
+.syntax--source.syntax--json .syntax--meta.syntax--structure.syntax--dictionary.syntax--json > .syntax--string.syntax--quoted.syntax--json > .syntax--punctuation.syntax--string {
+  color: #e06c75;
+}
+.syntax--source.syntax--json .syntax--meta.syntax--structure.syntax--dictionary.syntax--json > .syntax--value.syntax--json > .syntax--string.syntax--quoted.syntax--json,
+.syntax--source.syntax--json .syntax--meta.syntax--structure.syntax--array.syntax--json > .syntax--value.syntax--json > .syntax--string.syntax--quoted.syntax--json,
+.syntax--source.syntax--json .syntax--meta.syntax--structure.syntax--dictionary.syntax--json > .syntax--value.syntax--json > .syntax--string.syntax--quoted.syntax--json > .syntax--punctuation,
+.syntax--source.syntax--json .syntax--meta.syntax--structure.syntax--array.syntax--json > .syntax--value.syntax--json > .syntax--string.syntax--quoted.syntax--json > .syntax--punctuation {
+  color: #98c379;
+}
+.syntax--source.syntax--json .syntax--meta.syntax--structure.syntax--dictionary.syntax--json > .syntax--constant.syntax--language.syntax--json,
+.syntax--source.syntax--json .syntax--meta.syntax--structure.syntax--array.syntax--json > .syntax--constant.syntax--language.syntax--json {
+  color: #56b6c2;
+}
+.syntax--source.syntax--ruby .syntax--constant.syntax--other.syntax--symbol > .syntax--punctuation {
+  color: inherit;
+}
+.syntax--source.syntax--python .syntax--keyword.syntax--operator.syntax--logical.syntax--python {
+  color: #c678dd;
+}
+.syntax--source.syntax--python .syntax--variable.syntax--parameter {
+  color: #d19a66;
+}
+</style>
+  </head>
+  <body class='markdown-preview'><h1>Principal Component Analysis using Linear Algebra - Step by Step Guide</h1>
+<p>I was using PCA from quite a long time but a few days before I tried to learn how it works. So in this blog I have tried to explain PCA in an intuitive way, you will be able to understand the mathematics and will also see how and why do we use it.</p>
+<p>Before dive into PCA we need to understand SVD, Eigenvalues and Eigenvectors.</p>
+<h2>what is <strong>Single Value Decomposition.</strong></h2>
+<p>Lets start with one example.</p>
+<span class="math"><script type="math/tex; mode=display">\vec X = \begin{bmatrix}1 \\ 3\end{bmatrix} A = \begin{bmatrix}2 & 1\\-1 & 1\end{bmatrix}
+</script></span>
+<span class="math"><script type="math/tex; mode=display">Y = A\vec X = \begin{bmatrix}2 & 1\\-1 & 1\end{bmatrix} \begin{bmatrix}1 \\ 3\end{bmatrix} = \begin{bmatrix}5 \\ 2\end{bmatrix}
+</script></span>
+<p>We haven’t done anything special but let we try to see graphically.</p>
+<ul>
+<li>Graphically we can say we transformed one vector to another (rotated and stratched). This is what <span class="math"><script type="math/tex">A</script></span> does.</li>
+<li><span class="math"><script type="math/tex">A = \begin{bmatrix}\cos\theta & -\sin\theta\\\sin\theta & \cos\theta\end{bmatrix} \leftarrow</script></span> rotation matrix, if you want to rotate any vector to angle <span class="math"><script type="math/tex">\theta</script></span></li>
+<li><span class="math"><script type="math/tex">A = \begin{bmatrix}\alpha & 0\\0 & \alpha  \end{bmatrix} \leftarrow</script></span> <span class="math"><script type="math/tex">\alpha</script></span> is stretching.</li>
+</ul>
+<p>Now we can think that <span class="math"><script type="math/tex">A</script></span> is made up of some combination of rotation &amp; stretching.</p>
+<p>Let’s see only stretching:</p>
+<span class="math"><script type="math/tex; mode=display">= \begin{bmatrix}2 & 0\\0 & 2  \end{bmatrix} \begin{bmatrix}1\\3  \end{bmatrix} =  \begin{bmatrix}2\\6  \end{bmatrix}
+</script></span>
+<p>When we say of a single vector it is represented by a line. Now Let say there are 2-Dimensions(orthonormal) representing a circle.</p>
+<p><span class="math"><script type="math/tex">A</script></span> is matrix represented as : <span class="math"><script type="math/tex">A \in \mathbb{C}^{m\times n}</script></span></p>
+<p>Multiplication with metrix <span class="math"><script type="math/tex">A</script></span></p>
+<ul>
+<li>
+<p>of vector(1-D) rotates and stretches it but what will happen to Circle (2-D), Sphere (3-D), hyper Sphere(&gt;3-D).</p>
+</li>
+<li>
+<p>So, Circle will be converted into Ellipse, Sphere into Ellipsoid and Hyper-sphere into hyper-ellipsoid/ellipse.</p>
+</li>
+</ul>
+<p>For circle we will get an ellipse, with Major and Minor axes, we will be having a new co-ordinate system, it will be represented by (<span class="math"><script type="math/tex">\vec u\sigma</script></span>)</p>
+<p>Unit vectors (<span class="math"><script type="math/tex">\vec u_1, \vec u_2</script></span>) tells us, in which direction you are going &amp; <span class="math"><script type="math/tex">\sigma_1, \sigma_2</script></span> tells, how much we are going in that perticular direction.</p>
+<p>We started with one vector space and after multipling it with <span class="math"><script type="math/tex">A</script></span> we ended up in new vector space.</p>
+<span class="math"><script type="math/tex; mode=display">\vec v_1, \vec v_2, ... , \vec v_n \rightarrow \vec u_1\sigma_1, \vec u_2\sigma_2, ... , \vec u_n\sigma_n
+</script></span>
+<p>For this operation our matrix <span class="math"><script type="math/tex">A</script></span> should be rank efficient, means members of rows and columns are linearly independent.</p>
+<p><span class="math"><script type="math/tex">\vec u_1\sigma_1, \vec u_2\sigma_2</script></span> are principal axes and stretching factors <span class="math"><script type="math/tex">\sigma_1, \sigma_2</script></span> are singular values.</p>
+<span class="math"><script type="math/tex; mode=display">A \vec v_1 = \sigma_1 \vec u_1
+</script></span>
+<p>We took a matrix <span class="math"><script type="math/tex">A</script></span>(rotation, stretch) on vector <span class="math"><script type="math/tex">\vec v_1</script></span> and produced <span class="math"><script type="math/tex">\sigma_1 \vec u_1</script></span>. This is similar to eigenvalue problem with a little difference.</p>
+<p>Eigenvalue problem: <span class="math"><script type="math/tex">A \vec v = \lambda \vec v</script></span> (both sides <span class="math"><script type="math/tex">\vec v</script></span>)</p>
+<p>Try to generalise:</p>
+<span class="math"><script type="math/tex; mode=display">A \vec v_j = \sigma_j\vec u_j \text{ where j = 1, 2, 3, 4,..., n}
+</script></span>
+<span class="math"><script type="math/tex; mode=display">\begin{bmatrix} \\ \\A\\ \\ \\ \end{bmatrix}\begin{bmatrix}\vec v_1 & \vec v_2 & ... & \vec v_n\end{bmatrix} = \begin{bmatrix} \\ \vec u_1 & \vec u_2 & ... & \vec u_n \\ \\\end{bmatrix}\begin{bmatrix} \sigma_1 & 0 & ... & 0 \\ 0 & \sigma_2 & ... & 0 \\ ... & ... & ... & ... \\ 0 & 0 & ... & \sigma_n \end{bmatrix}
+</script></span>
+<span class="math"><script type="math/tex; mode=display">A_{m\times n}V_{n\times n} = \hat U_{Rotation} \hat \Sigma_{Stretching}
+</script></span>
+<p>From one orthonormal basis to another orthonormal basis.</p>
+<p>All stretching is picked up by <span class="math"><script type="math/tex">\hat \Sigma</script></span> and all rotation picked up by <span class="math"><script type="math/tex">\hat U</script></span>, which was produced by <span class="math"><script type="math/tex">A</script></span>.</p>
+<ul>
+<li>
+<p>Rotation matrix is also called <strong>unitary transformation</strong>.</p>
+</li>
+<li>
+<p>And if these are orthogonal components then:</p>
+<ul>
+<li>inverse of the matrix is same as its transpose.</li>
+<li><span class="math"><script type="math/tex">U^{-1} = U^{*}</script></span></li>
+<li>same for <span class="math"><script type="math/tex">V^{-1} = V^{*}</script></span></li>
+</ul>
+</li>
+</ul>
+<span class="math"><script type="math/tex; mode=display">AV = \hat U \hat \Sigma
+</script></span>
+<p>Multiply both sides by <span class="math"><script type="math/tex">V^{-1}</script></span></p>
+<span class="math"><script type="math/tex; mode=display">AVV^{-1} = \hat U \hat \Sigma V^{-1}
+</script></span>
+<span class="math"><script type="math/tex; mode=display">A = \hat U \hat \Sigma V^{*}
+</script></span>
+<p>This is <strong>reduced singular value decomposition.</strong></p>
+<span class="math"><script type="math/tex; mode=display">A_{m \times n} = \hat U_{m \times n} \hat \Sigma_{n \times n} V_{n \times n}^*
+</script></span>
+<p>Now add (<span class="math"><script type="math/tex">m-n</script></span>) silent column to <span class="math"><script type="math/tex">\hat U</script></span> to make it <span class="math"><script type="math/tex">(m \times m)</script></span> and (<span class="math"><script type="math/tex">m-n</script></span>) silent rows to <span class="math"><script type="math/tex">\hat \Sigma</script></span> to make it <span class="math"><script type="math/tex">(m \times n)</script></span></p>
+<p>Also remember diagonal elements of <span class="math"><script type="math/tex">\Sigma</script></span> are as follows:</p>
+<p><span class="math"><script type="math/tex">\sigma_1 \geq \sigma_2 \geq ... \geq\sigma_n</script></span></p>
+<p>Theorem(SVD): Every matrix <span class="math"><script type="math/tex">A \in \mathbb{C}^{m \times n}</script></span> has a singular value decomposition.</p>
+<ul>
+<li>Singular values {<span class="math"><script type="math/tex">\sigma_j</script></span>} are uniquely determined, and if <span class="math"><script type="math/tex">A</script></span> is square then <span class="math"><script type="math/tex">\sigma_j</script></span> are distinct.</li>
+<li>Singular vectors {<span class="math"><script type="math/tex">\vec u_j</script></span>} and {<span class="math"><script type="math/tex">\vec v_j</script></span>} are also unique up to a complex sign.</li>
+</ul>
+<p>Now, how to compute all the things in <span class="math"><script type="math/tex">A = U \Sigma V^*</script></span> ?</p>
+<p>Let’s start with <span class="math"><script type="math/tex">A^TA</script></span></p>
+<span class="math"><script type="math/tex; mode=display">A^TA = (U \Sigma V^*)^T(U \Sigma V^*)
+</script></span>
+<span class="math"><script type="math/tex; mode=display">= V \Sigma U^* U \Sigma V^*
+</script></span>
+<span class="math"><script type="math/tex; mode=display">= V \Sigma I \Sigma V^*
+</script></span>
+<span class="math"><script type="math/tex; mode=display">= V \Sigma^2 V^*
+</script></span>
+<p>Now <span class="math"><script type="math/tex">A^TAV= V \Sigma^2 V^*V</script></span></p>
+<span class="math"><script type="math/tex; mode=display">A^TAV= V \Sigma^2 
+</script></span>
+<p>This is same as Eigen value problem <span class="math"><script type="math/tex">A \vec X = \lambda \vec X</script></span></p>
+<p>If we solve eigen value problem we will get <span class="math"><script type="math/tex">\lambda_j = \sigma_j^2</script></span></p>
+<p>How to get <span class="math"><script type="math/tex">V</script></span> ?</p>
+<span class="math"><script type="math/tex; mode=display">AA^T = (U \Sigma V^*)(U \Sigma V^*)^T
+</script></span>
+<span class="math"><script type="math/tex; mode=display">= U \Sigma V^* V \Sigma U^*
+</script></span>
+<span class="math"><script type="math/tex; mode=display">= U \Sigma ^2 U^*
+</script></span>
+<p><span class="math"><script type="math/tex">AA^TU = U \Sigma ^2 U^*U</script></span></p>
+<span class="math"><script type="math/tex; mode=display">AA^TU = U \Sigma ^2
+</script></span>
+<p>Eigen value problem. <span class="math"><script type="math/tex">U</script></span> is eigen values. Its called self-adjoint or Hermition.</p>
+<h2>Eigenvalues and Eigenvectors</h2>
+<p>The word <strong>Eigen</strong> means <strong>latent</strong> or <strong>characteristic</strong>.
+Lets say 12 can be represented by <span class="math"><script type="math/tex">2\times2\times3</script></span>. Similarly a matrix is also can be represented by same vectors, these vectors are called eigen vectors.</p>
+<p>Let’s see more intuitively:</p>
+<p>We have an equation:</p>
+<span class="math"><script type="math/tex; mode=display">Ax = \lambda x
+</script></span>
+<p>It is true for <strong>special</strong> x(vectors) and <strong>special</strong> <span class="math"><script type="math/tex">\lambda</script></span> (numbers).</p>
+<p>Let’s begin with some numerical example:</p>
+<span class="math"><script type="math/tex; mode=display">A = \begin{bmatrix}3 & -1 \\ -1 & 3\end{bmatrix}
+</script></span>
+<p>and try <span class="math"><script type="math/tex">x =\begin{bmatrix}1 \\ 0\end{bmatrix}</script></span>:</p>
+<span class="math"><script type="math/tex; mode=display">Ax = \begin{bmatrix}3 \\ -1\end{bmatrix}
+</script></span>
+<p>So, for the above <span class="math"><script type="math/tex">x</script></span>, <span class="math"><script type="math/tex">x</script></span> and <span class="math"><script type="math/tex">Ax</script></span> are not in same direction.
+Lets try with <span class="math"><script type="math/tex">x =\begin{bmatrix}0 \\ 1\end{bmatrix}</script></span></p>
+<span class="math"><script type="math/tex; mode=display">Ax = \begin{bmatrix}-1 \\ 3\end{bmatrix}
+</script></span>
+<p>Also, for the above <span class="math"><script type="math/tex">x</script></span>, <span class="math"><script type="math/tex">x</script></span> and <span class="math"><script type="math/tex">Ax</script></span> are not in same direction.</p>
+<p>We can say no <span class="math"><script type="math/tex">\lambda</script></span> is going to satisfy the given equation for given values.</p>
+<p>Now let us take <strong>special</strong> <span class="math"><script type="math/tex">x =\begin{bmatrix}1 \\ 1\end{bmatrix}</script></span></p>
+<span class="math"><script type="math/tex; mode=display">Ax = \begin{bmatrix}2 \\ 2\end{bmatrix}
+</script></span>
+<p>Now both are pointing in same direction, and now we have some value of <span class="math"><script type="math/tex">\lambda</script></span> that satisfies the given equation: <span class="math"><script type="math/tex">2\vec x = A\vec x</script></span></p>
+<p>We can say this value of <span class="math"><script type="math/tex">\vec x</script></span> is eigen vector of <span class="math"><script type="math/tex">A</script></span> and <span class="math"><script type="math/tex">\lambda =2</script></span> is eigen value.</p>
+<p>Take one more <strong>special</strong> <span class="math"><script type="math/tex">x =\begin{bmatrix}1 \\ -1\end{bmatrix}</script></span></p>
+<span class="math"><script type="math/tex; mode=display">Ax = \begin{bmatrix}4 \\ -4\end{bmatrix}
+</script></span>
+<p>Both <span class="math"><script type="math/tex">Ax</script></span> and <span class="math"><script type="math/tex">x</script></span> are pointing in same direction. In this case <span class="math"><script type="math/tex">\lambda =4</script></span>. <span class="math"><script type="math/tex">4\vec x = A\vec x</script></span></p>
+<p>So, how to get these special values?
+We know <span class="math"><script type="math/tex">Ax = \lambda x</script></span> is same as <span class="math"><script type="math/tex">Ax = \lambda I x</script></span></p>
+<p><span class="math"><script type="math/tex">(A - \lambda I)x = 0</script></span></p>
+<p>For above equation</p>
+<p>case1:  <span class="math"><script type="math/tex">x=0</script></span> (not-interesting)</p>
+<p>case2: <span class="math"><script type="math/tex">x\neq0</script></span>, now <span class="math"><script type="math/tex">\det(A-\lambda I) =0</script></span></p>
+<ul>
+<li>When <span class="math"><script type="math/tex">\det(A-\lambda I) =0</script></span>, <span class="math"><script type="math/tex">(A-\lambda I)</script></span>  is <strong>singular</strong> matrix.</li>
+<li><span class="math"><script type="math/tex">\det(A-\lambda I) =0</script></span> is called <strong>characteristic</strong> equation, and its a polynomial equation and roots <span class="math"><script type="math/tex">\lambda</script></span> are eigenvalues.</li>
+</ul>
+<p><span class="math"><script type="math/tex">\det(A-\lambda I) =0</script></span></p>
+<span class="math"><script type="math/tex; mode=display">A - \lambda = \begin{bmatrix}3 & -1 \\ -1 & 3\end{bmatrix} - \begin{bmatrix}\lambda & 0 \\ 0 & \lambda\end{bmatrix}
+</script></span>
+<span class="math"><script type="math/tex; mode=display">= \begin{bmatrix}3 -\lambda & -1 \\ -1 & 3-\lambda\end{bmatrix}
+</script></span>
+<p>Step 1: Compute <span class="math"><script type="math/tex">\lambda</script></span></p>
+<span class="math"><script type="math/tex; mode=display">\det(A-\lambda I) = (3-\lambda)(3-\lambda) - 1
+</script></span>
+<span class="math"><script type="math/tex; mode=display">= \lambda^2-6\lambda + 8 = 0
+</script></span>
+<span class="math"><script type="math/tex; mode=display">= (\lambda-4)(\lambda-2) = 0
+</script></span>
+<p><span class="math"><script type="math/tex">\lambda =4,2</script></span> are solutions to the equations and are eigen values.</p>
+<p>Step 2: Compute eigen vector given eigen values.
+Solve for <span class="math"><script type="math/tex">\vec x</script></span>:
+For <span class="math"><script type="math/tex">\lambda=2</script></span> :</p>
+<span class="math"><script type="math/tex; mode=display">A -2I = \begin{bmatrix}3-2 & -1 \\-1 & 3-2\end{bmatrix} =  \begin{bmatrix}1 & -1 \\-1 & 1\end{bmatrix}
+</script></span>
+<span class="math"><script type="math/tex; mode=display">\begin{bmatrix}1 & -1 \\-1 & 1\end{bmatrix}\begin{bmatrix} x_1 \\ x_2\end{bmatrix} = 0
+</script></span>
+<span class="math"><script type="math/tex; mode=display">\begin{cases}x_1 - x_2 = 0\\-x_1 + x_2 = 0\end{cases}
+</script></span>
+<span class="math"><script type="math/tex; mode=display">x_1 = x_2
+</script></span>
+<p>so,  all vectors in direction <span class="math"><script type="math/tex">\begin{bmatrix}1 \\1\end{bmatrix}</script></span> are eigenvector so we call it eigen direction.</p>
+<p>For <span class="math"><script type="math/tex">\lambda=4</script></span> :</p>
+<span class="math"><script type="math/tex; mode=display">A -4I = \begin{bmatrix}3-4 & -1 \\-1 & 3-4\end{bmatrix} =  \begin{bmatrix}1 & -1 \\-1 & 1\end{bmatrix}
+</script></span>
+<span class="math"><script type="math/tex; mode=display">\begin{bmatrix}-1 & -1 \\-1 & -1\end{bmatrix}\begin{bmatrix} x_1 \\ x_2\end{bmatrix} = 0
+</script></span>
+<span class="math"><script type="math/tex; mode=display">\begin{cases}x_1 - x_2 = 0\\x_1 - x_2 = 0\end{cases}
+</script></span>
+<span class="math"><script type="math/tex; mode=display">x_1 = -x_2
+</script></span>
+<p>so,  all vectors in direction <span class="math"><script type="math/tex">\begin{bmatrix}1 \\-1\end{bmatrix}</script></span> are eigenvector so we call it eigen direction.</p>
+<p><span class="math"><script type="math/tex">[T, D] = eig(A)</script></span>, <span class="math"><script type="math/tex">T</script></span>= Vectors, <span class="math"><script type="math/tex">D</script></span>=Values</p>
+<p>These satisfies <span class="math"><script type="math/tex">A = TDT^{-1}</script></span></p>
+<p><span class="math"><script type="math/tex">T = \begin{bmatrix}  \\x_{\lambda_{1}} & x_{\lambda_{2}} & ... & x_{\lambda_{n}}\\ \\\end{bmatrix}</script></span>
+<span class="math"><script type="math/tex">D = \begin{bmatrix}  \lambda_1 &0 & ... & 0\\0 &\lambda_2 & ... & 0\\... &... & ... & ... \\0 &0 & ... & \lambda_n\end{bmatrix}</script></span></p>
+<p>Its always easy for us to compute <span class="math"><script type="math/tex">D^N</script></span> easily but <span class="math"><script type="math/tex">A^N</script></span> is computationally expensive.</p>
+<span class="math"><script type="math/tex; mode=display">D^N = \begin{bmatrix}  \lambda_1^N &0 & ... & 0\\0 &\lambda_2^N & ... & 0\\... &... & ... & ... \\0 &0 & ... & \lambda_n^N\end{bmatrix}
+</script></span>
+<p><span class="math"><script type="math/tex">A^N = (TDT^{-1})(TDT^{-1})...(TDT^{-1})</script></span>, n-times</p>
+<p><span class="math"><script type="math/tex">A^N = (TD(T^{-1}T)D(T^{-1}...T)DT^{-1})</script></span></p>
+<p><span class="math"><script type="math/tex">A^N = (TD^NT^{-1})</script></span></p>
+<p>Now we are ready to understand PCA.</p>
+<h2>Principal Component Analysis</h2>
+<p>So let’s begin with a fancy Physics example.</p>
+<p><img src="F:\Workspace\ML_Guide\Images\springMass.jpg?v=1540758192337" alt="springMass"></p>
+<p>As you can see in the figure there is mass <span class="math"><script type="math/tex">m</script></span> hanging to a spring with spring constant <span class="math"><script type="math/tex">k</script></span>. Now assume that we pulled the mass in vertical direction and released. Due to this action it will start motion in 1-Direction(up-down). So now we are interested in that motion in one direction, and as you all know it can be calculated using the following equations.</p>
+<span class="math"><script type="math/tex; mode=display">F = ma \tag{1}
+</script></span>
+<span class="math"><script type="math/tex; mode=display">Force = mass * acceleration
+</script></span>
+<p>Also,</p>
+<span class="math"><script type="math/tex; mode=display">-kf(t) = ma
+</script></span>
+<span class="math"><script type="math/tex; mode=display">-\frac{k}{m}f(t) = a
+</script></span>
+<span class="math"><script type="math/tex; mode=display">-\omega^{2}f(t) = \frac{\text{d}f(t)}{\text{d}t^{2}}
+</script></span>
+<p>Where,
+<span class="math"><script type="math/tex">\omega =</script></span> Angular Frequency
+<span class="math"><script type="math/tex">f(t) =</script></span> Function of displacement</p>
+<span class="math"><script type="math/tex; mode=display">f(t) = Acos(\omega t + \omega_{0})
+</script></span>
+<p>So in this way we can solve the <strong>Spring Mass System</strong>.  Now let say we don’t have <span class="math"><script type="math/tex">F=ma</script></span>, we only had some data. Can we get <span class="math"><script type="math/tex">f=ma</script></span>  just from the data?</p>
+<p>Now take the above system and install some cameras around it to capture some data. For our example we can take 3 cameras, each one of them recording some set of data. Now our objective is to figure just from the data can we say someting about the system.</p>
+<p>Let say we got data from cameras in the below format:</p>
+<ul>
+<li>Camera1 : <span class="math"><script type="math/tex">(\vec X_{a}, \vec Y_{a})</script></span></li>
+<li>Camera2 : <span class="math"><script type="math/tex">(\vec X_{b}, \vec Y_{b})</script></span></li>
+<li>Camera3 : <span class="math"><script type="math/tex">(\vec X_{c}, \vec Y_{c})</script></span></li>
+</ul>
+<p>Our data matrix will look something like:</p>
+<span class="math"><script type="math/tex; mode=display">X = \begin{bmatrix}\vec X_{a} \\\vec Y_{a}\\\vec X_{b}\\\vec Y_{b}\\\vec X_{c}\\\vec Y_{c} \end{bmatrix}
+</script></span>
+<p>Whenever we get data from these kind of sources there are two kind of problems associated with it:</p>
+<ol>
+<li>Noise</li>
+<li>Redundancy</li>
+</ol>
+<p>We will focus on redundancy,</p>
+<ul>
+<li>is my <span class="math"><script type="math/tex">\vec X</script></span> is independent of <span class="math"><script type="math/tex">\vec Y</script></span></li>
+<li>All three cameras are giving me the same information just from different angles.</li>
+</ul>
+<p>In our case we have 6 sets of data but we only needed 1. So our <strong>PCA</strong> is going to tell us where should we place our single camera and record only a single value.</p>
+<p>Before dive into PCA we need to understand some related concepts:</p>
+<ul>
+<li>
+<p>variance</p>
+</li>
+<li>
+<p>Covariance
+Say we have two collections of data:</p>
+<p><span class="math"><script type="math/tex">\vec a=[a_{1}, a_{2}, ... ,a_{n} ]</script></span> and <span class="math"><script type="math/tex">\vec b=[b_{1}, b_{2}, ... ,b_{n} ]</script></span>
+<strong>Covariance</strong> says how these two data sets are related. On the other hand <strong>variance</strong> says how large changes are there in the data set itself.</p>
+<p>variance is given by:</p>
+<span class="math"><script type="math/tex; mode=display">\sigma_{a}^{2} = \frac{1}{n-1}\vec a \vec a^{T}  \text{ subject to mean= 0}\tag{2}
+</script></span>
+<p>If the product  <span class="math"><script type="math/tex">\vec a \vec a^{T}</script></span> is big, it means lot of variance. If its small means low variance.
+You can assume a <span class="math"><script type="math/tex">sine</script></span> wave on <span class="math"><script type="math/tex">x-axis</script></span> is with mean zero and its amplitude(<span class="math"><script type="math/tex">A</script></span>) says its variance, bigger value of <span class="math"><script type="math/tex">A</script></span> says high variance and smaller value says low variance.</p>
+<p>Covariance is given by:</p>
+<span class="math"><script type="math/tex; mode=display">\sigma_{a,b}^{2} = \frac{1}{n-1}\vec a \vec b^{T}  \text{ subject to mean= 0} \tag{3}
+</script></span>
+<p><span class="math"><script type="math/tex">\vec a \vec b^{T}</script></span> tells you how much <span class="math"><script type="math/tex">\vec a</script></span> &amp; <span class="math"><script type="math/tex">\vec b</script></span> are in same direction. Maximum value is <strong>1</strong>. Value =  <strong>1</strong>, means they are in same direction(<span class="math"><script type="math/tex">\theta=0^0</script></span>),  <strong>0</strong> means they are orthogonal to each other(<span class="math"><script type="math/tex">\theta=90^0</script></span>) and value =  <strong>-1</strong> says they are in opposite direction(<span class="math"><script type="math/tex">\theta=180^0</script></span>).</p>
+</li>
+</ul>
+<p>Now let’s come back to Spring Mass System. Whenever lots of data is available we try to remove redundancy. For example in our dataset we only need <em>1-degree of freedom</em> but we have <em>6-degrees of freedom</em> of information. We need to convert it back to <em>1-degree</em>.</p>
+<p>We can generalize our equation from vectors to metrices as:</p>
+<span class="math"><script type="math/tex; mode=display">C_x = \frac{1}{1-n}XX^T
+</script></span>
+<p>In our case <span class="math"><script type="math/tex">C_x</script></span> is <span class="math"><script type="math/tex">6\times 6</script></span> matrix.</p>
+<span class="math"><script type="math/tex; mode=display">C_x =  \begin{bmatrix}\mathbf{\sigma_{X_{a}X_{a}}^2} & \sigma_{X_{a}Y_{a}}^2 & \sigma_{X_{a}X_{b}}^2 & \sigma_{X_{a}Y_{b}}^2 & \sigma_{X_{a}X_{c}}^2 & \sigma_{X_{a}Y_{c}}^2\\\sigma_{Y_{a}X_{a}}^2 & \mathbf{\sigma_{Y_{a}Y_{a}}^2} & \sigma_{Y_{a}X_{b}}^2 & \sigma_{Y_{a}Y_{b}}^2 & \sigma_{Y_{a}X_{c}}^2 & \sigma_{Y_{a}Y_{c}}^2\\\sigma_{X_{b}X_{a}}^2 & \sigma_{X_{b}Y_{a}}^2 & \mathbf{\sigma_{X_{b}X_{b}}^2} & \sigma_{X_{b}Y_{b}}^2 & \sigma_{X_{b}X_{c}}^2 & \sigma_{X_{b}Y_{c}}^2\\\sigma_{Y_{b}X_{a}}^2 & \sigma_{Y_{b}Y_{a}}^2 & \sigma_{Y_{b}X_{b}}^2 & \mathbf{\sigma_{Y_{b}Y_{b}}^2} & \sigma_{Y_{b}X_{c}}^2 & \sigma_{Y_{b}Y_{c}}^2\\\sigma_{X_{c}X_{a}}^2 & \sigma_{X_{c}Y_{a}}^2 & \sigma_{X_{c}X_{b}}^2 & \sigma_{X_{c}Y_{b}}^2 & \mathbf{\sigma_{X_{c}X_{c}}^2} & \sigma_{X_{c}Y_{c}}^2\\\sigma_{Y_{c}X_{a}}^2 & \sigma_{Y_{c}Y_{a}}^2 & \sigma_{Y_{c}X_{b}}^2 & \sigma_{Y_{c}Y_{b}}^2 & \sigma_{Y_{c}X_{c}}^2 & \mathbf{\sigma_{Y_{c}Y_{c}}^2}\end{bmatrix} \tag{4}
+</script></span>
+<p>What we can see in above matrix is:</p>
+<ul>
+<li>Diagonals: <span class="math"><script type="math/tex">\rightarrow</script></span> variance measures.</li>
+<li>Off-diagonals: <span class="math"><script type="math/tex">\rightarrow</script></span> Co-variance between all pairs.
+<ul>
+<li>All off-diagonal elements are Symmetric, these type of metrices are called <strong>symmetric</strong> metrices or <strong>self-adjoint</strong> metrices or <strong>Hermition</strong> metrices.
+<ul>
+<li>If values are very small: It means they are Statistcally independent.</li>
+<li>If values are very big: It means they are Statistically dependent <span class="math"><script type="math/tex">\rightarrow</script></span> means higher redundancy.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>If diagonal values are higher (variance is higher) that means there is a lot of stuff is happening and if its smaller then no much is going on.</p>
+<p>Diagonal terms with big values are important <span class="math"><script type="math/tex">\rightarrow</script></span> all system stuff is happening.</p>
+<p>Our main aim is to make <span class="math"><script type="math/tex">X</script></span> diagonal <span class="math"><script type="math/tex">\rightarrow</script></span> no redundancy <span class="math"><script type="math/tex">\rightarrow</script></span>  covariance should be minimum (<span class="math"><script type="math/tex">0</script></span>).</p>
+<span class="math"><script type="math/tex; mode=display">X \Rightarrow\text{MAKE DIAGONAL}
+</script></span>
+<p>Or we can say is we want to diagonalise the system <span class="math"><script type="math/tex">\rightarrow</script></span> change the basis we are working in so it becomes diagonal.</p>
+<p>If all elements are other than diagonal are zero means there is no dependency, they are independent, there is no redundancy.</p>
+<p>After diagonalising the system we will be left with diagonal terms, now we can arrange the diagonal terms in descending order.</p>
+<span class="math"><script type="math/tex; mode=display">C_x = \begin{bmatrix}biggest & 0 & 0 &0\\0 & ... & 0 &0 \\0 & 0 & ... &0\\0 &0 & 0 &smallest\end{bmatrix}
+</script></span>
+<p>Biggest diagonals are going to tell us the dynamics are strongest.</p>
+<p>Now our system looks like Singular Value Decomposition (SVD).</p>
+<p><span class="math"><script type="math/tex">X</script></span> is data matrix.</p>
+<p><span class="math"><script type="math/tex">XX^T = S \Lambda S^{-1}</script></span> eigenvalue decomposition.</p>
+<p>Where <span class="math"><script type="math/tex">S</script></span> is matrix of eigenvectors of <span class="math"><script type="math/tex">XX^T</script></span>.</p>
+<p>And for orthonormal metrices <span class="math"><script type="math/tex">S^{-1} = S^T</script></span>.
+<span class="math"><script type="math/tex">\Lambda</script></span> is diagonal matrix with eigenvalues of <span class="math"><script type="math/tex">XX^T</script></span>.</p>
+<p>We wanted to create a new frame of reference, to make a new set of measurement.</p>
+<p>Let’s say:</p>
+<p><span class="math"><script type="math/tex">Y = S^TX</script></span>, so <span class="math"><script type="math/tex">Y</script></span> is our new set.</p>
+<span class="math"><script type="math/tex; mode=display">C_Y = \frac{1}{1-n}YY^T
+</script></span>
+<span class="math"><script type="math/tex; mode=display">C_Y = \frac{1}{1-n}(S^TX)(S^TX)^T
+</script></span>
+<span class="math"><script type="math/tex; mode=display">= \frac{1}{1-n}(S^TX)(X^TS)
+</script></span>
+<span class="math"><script type="math/tex; mode=display">= \frac{1}{1-n}(S^TS \Lambda S^{-1}S)
+</script></span>
+<span class="math"><script type="math/tex; mode=display">C_Y = \frac{\Lambda}{1-n} \text{ where $\Lambda$ is a diagonal matrix.}
+</script></span>
+<p>Now for our dataset:</p>
+<span class="math"><script type="math/tex; mode=display">\Lambda =  \begin{bmatrix}\sigma & 0 & 0 & 0 & 0 & 0\\ 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 \end{bmatrix}
+</script></span>
+<p>So it says, only one direction matters and also says it is a single degree of freedom problem.</p>
+<p>So, this solution was using eigenvalues and eigen vectors.</p>
+<p>Now we will solve the above equation by SVD.</p>
+<p><span class="math"><script type="math/tex">X</script></span> is our data matrix  =  <span class="math"><script type="math/tex">U\Sigma V^*</script></span></p>
+<span class="math"><script type="math/tex; mode=display">Y = U^* X
+</script></span>
+<span class="math"><script type="math/tex; mode=display">C_Y = \frac{1}{1-n} YY^T
+</script></span>
+<span class="math"><script type="math/tex; mode=display">C_Y = \frac{1}{1-n} (U^* X)(U^* X)^T
+</script></span>
+<span class="math"><script type="math/tex; mode=display">C_Y = \frac{1}{1-n} (U^* X)(X^TU )
+</script></span>
+<span class="math"><script type="math/tex; mode=display">C_Y = \frac{1}{1-n} (U^* U\Sigma V^*)((U\Sigma V^*)^TU )
+</script></span>
+<span class="math"><script type="math/tex; mode=display">C_Y = \frac{1}{1-n} (\Sigma V^*)(V\Sigma U^*U )
+</script></span>
+<span class="math"><script type="math/tex; mode=display">C_Y = \frac{1}{1-n} \Sigma^2
+</script></span>
+<p><span class="math"><script type="math/tex">\Sigma^2</script></span> is same as <span class="math"><script type="math/tex">\Lambda \rightarrow</script></span> <span class="math"><script type="math/tex">\lambda_i = \sigma_i^2</script></span> (Connection between Single value and eigen vectors.)</p></body>
+</html>
